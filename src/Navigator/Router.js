@@ -1,0 +1,38 @@
+// Router.js
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import Home from '../assets/screens/Home';
+import PariwisataAlam from '../assets/screens/PariwisataAlam';
+import CobanRondo from '../assets/screens/PariwisataAlam/cobanrondo';
+import PantaiBalekambang from '../assets/screens/PariwisataAlam/pantaibalekambang';
+import PantaiGoachina from '../assets/screens/PariwisataAlam/pantaigoachina';
+import PantaiNgudel from '../assets/screens/PariwisataAlam/pantaingudel';
+import { PariwisataKuliner, PariwisataReligius, PariwisataSejarah } from '../assets/screens';
+import PecelKawi from '../assets/screens/PariwisataKuliner/pecelkawi';
+import GerejaKayutangan from '../assets/screens/PariwisataReligius/gerejakayutangan';
+import KampungHeritage from '../assets/screens/PariwisataSejarah/kampungheritage';
+import FavoriteScreen from '../assets/screens/Favorite';
+
+const Stack = createStackNavigator();
+
+const Router = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="Favorite" component={FavoriteScreen} />
+      <Stack.Screen name="PariwisataAlam" component={PariwisataAlam} />
+      <Stack.Screen name="CobanRondo" component={CobanRondo} />
+      <Stack.Screen name="PantaiBalekambang" component={PantaiBalekambang} />
+      <Stack.Screen name="PantaiGoachina" component={PantaiGoachina} />
+      <Stack.Screen name="PantaiNgudel" component={PantaiNgudel} />
+      <Stack.Screen name="PariwisataKuliner" component={PariwisataKuliner} />
+      <Stack.Screen name="PecelKawi" component={PecelKawi} />
+      <Stack.Screen name="PariwisataReligius" component={PariwisataReligius} />
+      <Stack.Screen name="GerejaKayutangan" component={GerejaKayutangan} />
+      <Stack.Screen name="PariwisataSejarah" component={PariwisataSejarah} />
+      <Stack.Screen name="KampungHeritage" component={KampungHeritage} />
+    </Stack.Navigator>
+  );
+};
+
+export default Router;

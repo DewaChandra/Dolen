@@ -4,44 +4,20 @@ import {View, Text, FlatList, StyleSheet, TouchableOpacity, Image,} from 'react-
 const tourismData = [
   {
     id: '1',
-    name: 'Air Terjun Coban Rondo',
-    location: 'Kabupaten Malang, Jawa Timur',
-    image: require('../../../assets/images/cobanrondo.jpg'),
-  },
-  {
-    id: '2',
-    name: 'Pantai Balekambang',
-    location: 'Kabupaten Malang, Jawa Timur',
-    image: require('../../../assets/images/balekambang.jpg'),
-  },
-  {
-    id: '3',
-    name: 'Pantai Goa China',
-    location: 'Kabupaten Malang, Jawa Timur',
-    image: require('../../../assets/images/goachina.jpg'),
-  },
-  {
-    id: '4',
-    name: 'Pantai Ngudel',
-    location: 'Kabupaten Malang, Jawa Timur',
-    image: require('../../../assets/images/ngudel.jpg'),
+    name: 'Kampung Heritage',
+    location: 'Kota Malang, Jawa Timur',
+    image: require('../../../assets/images/kampungheritage.jpg'),
   },
 ];
 
-const PariwisataAlam = ({ navigation }) => {
+const FavoriteScreen = ({ navigation }) => {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.touchableItem}
       onPress={() => {
         if (item.id === '1') {
-          navigation.navigate('CobanRondo');
-        } if (item.id === '2') { 
-          navigation.navigate('PantaiBalekambang');
-        } if (item.id === '3') { 
-          navigation.navigate('PantaiGoachina');
-        } if (item.id === '4') { 
-          navigation.navigate('PantaiNgudel');
-        }
+          navigation.navigate('KampungHeritage');
+        } 
       }}>
       <View style={styles.itemContainer}>
         <View style={styles.itemImageContainer}>
@@ -121,7 +97,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: 'row',
-    backgroundColor: '#1343aa',
+    backgroundColor: '#d9750f',
     padding: 16,
     borderRadius: 8,
   },
@@ -148,4 +124,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PariwisataAlam;
+export default FavoriteScreen;

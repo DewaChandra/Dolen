@@ -1,6 +1,13 @@
-import * as React from 'react';
-import { PariwisataAlam } from './src/assets/screens';
-import CobanRondo from './src/assets/screens/PariwisataAlam/cobanrondo';
-export default function App() {
-  return <PariwisataAlam />;
-}
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import Router from './src/Navigator/Router';
+
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Router />
+    </NavigationContainer>
+  );
+};
+
+export default App;

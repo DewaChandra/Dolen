@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const MenuUtama = () => {
+  const navigation = useNavigation();
   const [menuTextColors, setMenuTextColors] = useState({
     alam: 'black',
     kuliner: 'black',
@@ -14,6 +16,16 @@ const MenuUtama = () => {
       ...menuTextColors,
       [menuKey]: color,
     });
+    if (menuKey === 'alam') {
+      // Navigate to PariwisataAlam 
+      navigation.navigate('PariwisataAlam');
+    } else if (menuKey === 'kuliner') {
+      navigation.navigate('PariwisataKuliner');
+    } else if (menuKey === 'religius') {
+      navigation.navigate('PariwisataReligius'); 
+    } else if (menuKey === 'sejarah') {
+      navigation.navigate('PariwisataSejarah'); 
+    }
   };
 
   return (
@@ -62,17 +74,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#e9e9f0',
   },
-  logo: {
-    width: 300,
-    height: 300,
-  },
   menuContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   menuItem: {
-    margin: 10,
+    margin: 5,
     padding: 20,
     borderWidth: 5,
     borderRadius: 20,

@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import MyComponent from './menuUtama';
 
-export default function Home() {
+const Home = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
@@ -10,6 +10,24 @@ export default function Home() {
         style={styles.logo}
       />
       <MyComponent namaProps="MenuUtama" />
+
+      {/* Navbar */}
+      <View style={styles.navbar}>
+        <TouchableOpacity style={styles.navbarIconContainer}>
+          <Image
+            source={require('../../../assets/images/home.png')}
+            style={styles.navbarIcon}
+          />
+          <Text style={styles.navbarText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navbarIconContainer} onPress={() => navigation.navigate('Favorite')}>
+          <Image
+            source={require('../../../assets/images/favorite.png')}
+            style={styles.navbarIcon}
+          />
+          <Text style={styles.navbarText}>Favorite</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -22,7 +40,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#e9e9f0',
   },
   logo: {
-    width: 300,
-    height: 300,
+    width: 200,
+    height: 200,
+  },
+  navbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    paddingVertical: 10,
+    backgroundColor: '#e9e9f0',
+    position: 'absolute',
+    bottom: 0,
+  },
+  navbarIconContainer: {
+    alignItems: 'center',
+  },
+  navbarText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  navbarIcon: {
+    width: 24,
+    height: 24,
   },
 });
+export default Home;
