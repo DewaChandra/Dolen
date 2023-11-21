@@ -1,5 +1,5 @@
-import React from 'react';
-import {View, Text, FlatList, StyleSheet, TouchableOpacity, Image,} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, Animated } from 'react-native';
 
 const tourismData = [
   {
@@ -29,31 +29,53 @@ const tourismData = [
 ];
 
 const PariwisataAlam = ({ navigation }) => {
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.touchableItem}
-      onPress={() => {
+  const [animation] = useState(new Animated.Value(1));
+
+  const renderItem = ({ item }) => {
+    const handlePress = () => {
+      Animated.spring(animation, {
+        toValue: 0.9,
+        useNativeDriver: true,
+      }).start(() => {
         if (item.id === '1') {
           navigation.navigate('CobanRondo');
-        } if (item.id === '2') { 
+        } else if (item.id === '2') { 
           navigation.navigate('PantaiBalekambang');
-        } if (item.id === '3') { 
+        } else if (item.id === '3') { 
           navigation.navigate('PantaiGoachina');
-        } if (item.id === '4') { 
+        } else if (item.id === '4') { 
           navigation.navigate('PantaiNgudel');
         }
-      }}>
-      <View style={styles.itemContainer}>
-        <View style={styles.itemImageContainer}>
-          <Image source={item.image} style={styles.itemImage} />
-        </View>
-        <View style={styles.itemTextContainer}>
-          <Text style={styles.itemName}>{item.name}</Text>
-          <Text style={styles.itemLocation}>{item.location}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+
+        Animated.spring(animation, {
+          toValue: 1,
+          useNativeDriver: true,
+        }).start();
+      });
+    };
+
+    return (
+      <TouchableOpacity
+        style={styles.touchableItem}
+        onPress={handlePress}
+      >
+        <Animated.View
+          style={[
+            styles.itemContainer,
+            { transform: [{ scale: animation }] },
+          ]}
+        >
+          <View style={styles.itemImageContainer}>
+            <Image source={item.image} style={styles.itemImage} />
+          </View>
+          <View style={styles.itemTextContainer}>
+            <Text style={styles.itemName}>{item.name}</Text>
+            <Text style={styles.itemLocation}>{item.location}</Text>
+          </View>
+        </Animated.View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -68,7 +90,8 @@ const PariwisataAlam = ({ navigation }) => {
       <View style={styles.navbar}>
         <TouchableOpacity
           style={styles.navbarIconContainer}
-          onPress={() => navigation.navigate('Home')}>
+          onPress={() => navigation.navigate('Home')}
+        >
           <Image
             source={require('../../../assets/images/home.png')}
             style={styles.navbarIcon}
