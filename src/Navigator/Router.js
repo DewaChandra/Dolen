@@ -12,6 +12,7 @@ import PecelKawi from '../assets/screens/PariwisataKuliner/pecelkawi';
 import GerejaKayutangan from '../assets/screens/PariwisataReligius/gerejakayutangan';
 import KampungHeritage from '../assets/screens/PariwisataSejarah/kampungheritage';
 import FavoriteScreen from '../assets/screens/Favorite';
+import FormPariwisataAlam from '../assets/screens/PariwisataAlam/formpa';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,7 @@ const Router = () => {
       <Stack.Screen name="GerejaKayutangan" component={GerejaKayutangan} />
       <Stack.Screen name="PariwisataSejarah" component={PariwisataSejarah} />
       <Stack.Screen name="KampungHeritage" component={KampungHeritage} />
+      <Stack.Screen name="FormPariwisataAlam" component={FormPariwisataAlam} />
     </Stack.Navigator>
   );
 };

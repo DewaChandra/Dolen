@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, Animated } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, Animated, TextInput } from 'react-native';
+import FormPariwisataAlam from './formpa';
 
 const tourismData = [
   {
@@ -30,6 +31,15 @@ const tourismData = [
 
 const PariwisataAlam = ({ navigation }) => {
   const [animation] = useState(new Animated.Value(1));
+  const [search, setSearch] = useState('');
+
+  const filteredData = tourismData.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleOpenForm = () => {
+    navigation.navigate('FormPariwisataAlam');
+  };
 
   const renderItem = ({ item }) => {
     const handlePress = () => {
@@ -79,6 +89,21 @@ const PariwisataAlam = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {/* TextInput for searching */}
+      <View style={styles.header}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search..."
+          placeholderTextColor="black"
+          onChangeText={(text) => setSearch(text)}
+          value={search}
+        />
+        {/* Button to open the form */}
+        <TouchableOpacity style={styles.formButton} onPress={handleOpenForm}>
+          <Text style={styles.formButtonText}>Add New Artikel</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Content */}
       <FlatList
         data={tourismData}
@@ -136,6 +161,31 @@ const styles = StyleSheet.create({
   navbarIcon: {
     width: 24,
     height: 24,
+  },
+  searchInput: {
+    height: 40,
+    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10, 
+    flex: 1, // Take up remaining space
+  },
+  header: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  formButton: {
+    backgroundColor: '#1343aa',
+    padding: 10,
+    borderRadius: 8,
+    marginLeft: 10,
+    alignItems: 'center',
+  },
+  formButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   touchableItem: {
     marginBottom: 12,
