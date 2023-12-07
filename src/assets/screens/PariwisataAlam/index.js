@@ -1,122 +1,92 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, Animated, TextInput } from 'react-native';
-import FormPariwisataAlam from './formpa';
+import React, {useState, useCallback} from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Animated,
+  TextInput,
+  ActivityIndicator,
+  RefreshControl
+} from 'react-native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import axios from 'axios';
 
-const tourismData = [
-  {
-    id: '1',
-    name: 'Air Terjun Coban Rondo',
-    location: 'Kabupaten Malang, Jawa Timur',
-    image: require('../../../assets/images/cobanrondo.jpg'),
-  },
-  {
-    id: '2',
-    name: 'Pantai Balekambang',
-    location: 'Kabupaten Malang, Jawa Timur',
-    image: require('../../../assets/images/balekambang.jpg'),
-  },
-  {
-    id: '3',
-    name: 'Pantai Goa China',
-    location: 'Kabupaten Malang, Jawa Timur',
-    image: require('../../../assets/images/goachina.jpg'),
-  },
-  {
-    id: '4',
-    name: 'Pantai Ngudel',
-    location: 'Kabupaten Malang, Jawa Timur',
-    image: require('../../../assets/images/ngudel.jpg'),
-  },
-];
-
-const PariwisataAlam = ({ navigation }) => {
+const PariwisataAlam = ({route}) => {
   const [animation] = useState(new Animated.Value(1));
   const [search, setSearch] = useState('');
+  const [tourismData, setTourismData] = useState([]);
+  const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  
+  const getDataBlog = async () => {
+    try {
+      const response = await axios.get(
+        'https://6570831f09586eff66418846.mockapi.io/dolenapp/PariwisataAlam',
+      );
+      setTourismData(response.data);
+      setLoading(false)
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  const filteredData = tourismData.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      getDataBlog()
+      setRefreshing(false);
+    }, 1500);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      getDataBlog();
+    }, [])
   );
-
-  const handleOpenForm = () => {
-    navigation.navigate('FormPariwisataAlam');
-  };
-
-  const renderItem = ({ item }) => {
-    const handlePress = () => {
-      Animated.spring(animation, {
-        toValue: 0.9,
-        useNativeDriver: true,
-      }).start(() => {
-        if (item.id === '1') {
-          navigation.navigate('CobanRondo');
-        } else if (item.id === '2') { 
-          navigation.navigate('PantaiBalekambang');
-        } else if (item.id === '3') { 
-          navigation.navigate('PantaiGoachina');
-        } else if (item.id === '4') { 
-          navigation.navigate('PantaiNgudel');
-        }
-
-        Animated.spring(animation, {
-          toValue: 1,
-          useNativeDriver: true,
-        }).start();
-      });
-    };
-
-    return (
-      <TouchableOpacity
-        style={styles.touchableItem}
-        onPress={handlePress}
-      >
-        <Animated.View
-          style={[
-            styles.itemContainer,
-            { transform: [{ scale: animation }] },
-          ]}
-        >
-          <View style={styles.itemImageContainer}>
-            <Image source={item.image} style={styles.itemImage} />
-          </View>
-          <View style={styles.itemTextContainer}>
-            <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemLocation}>{item.location}</Text>
-          </View>
-        </Animated.View>
-      </TouchableOpacity>
-    );
-  };
 
   return (
     <View style={styles.container}>
-      {/* TextInput for searching */}
       <View style={styles.header}>
         <TextInput
           style={styles.searchInput}
           placeholder="Search..."
           placeholderTextColor="black"
-          onChangeText={(text) => setSearch(text)}
+          onChangeText={text => setSearch(text)}
           value={search}
         />
-        {/* Button to open the form */}
-        <TouchableOpacity style={styles.formButton} onPress={handleOpenForm}>
+        <TouchableOpacity
+          style={styles.formButton}
+          onPress={() => navigation.navigate('FormPariwisataAlam')}>
           <Text style={styles.formButtonText}>Add New Artikel</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Content */}
-      <FlatList
-        data={tourismData}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-      />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingHorizontal: 24,
+          gap: 10,
+          paddingVertical: 20,
+        }} refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
+        <View style={{paddingVertical: 10, gap: 10}}>
+          {loading ? (
+            <ActivityIndicator size={'large'} color={'blue'} />
+          ) : (
+            tourismData.map((item, index) => <Items item={item} key={index} />)
+          )}
+        </View>
+      </ScrollView>
 
-      {/* Navbar */}
       <View style={styles.navbar}>
         <TouchableOpacity
           style={styles.navbarIconContainer}
-          onPress={() => navigation.navigate('Home')}
-        >
+          onPress={() => navigation.navigate('Home')}>
           <Image
             source={require('../../../assets/images/home.png')}
             style={styles.navbarIcon}
@@ -132,6 +102,26 @@ const PariwisataAlam = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     </View>
+  );
+};
+
+const Items = ({ item }) => {
+  const navigation = useNavigation();
+  return (
+    <TouchableOpacity
+      style={styles.touchableItem}
+      onPress={() => navigation.navigate('BlogDetail', {blogId: item.id})}
+    >
+      <View style={styles.itemContainer}>
+        <View style={styles.itemImageContainer}>
+          <Image source={{uri: item.image}} style={styles.itemImage} onError={(e) => console.log("Image load error", e.nativeEvent.error)}/>
+        </View>
+        <View style={styles.itemTextContainer}>
+          <Text style={styles.itemName}>{item.title}</Text>
+          <Text style={styles.itemLocation}>{item.ticketPrice}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -168,7 +158,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
-    marginBottom: 10, 
+    marginBottom: 10,
     flex: 1, // Take up remaining space
   },
   header: {

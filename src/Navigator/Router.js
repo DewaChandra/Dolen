@@ -13,6 +13,8 @@ import GerejaKayutangan from '../assets/screens/PariwisataReligius/gerejakayutan
 import KampungHeritage from '../assets/screens/PariwisataSejarah/kampungheritage';
 import FavoriteScreen from '../assets/screens/Favorite';
 import FormPariwisataAlam from '../assets/screens/PariwisataAlam/formpa';
+import BlogDetail from '../assets/screens/BlogDetail';
+import EditBlogForm from '../assets/screens/EditBlogForm/index';
 
 const Stack = createStackNavigator();
 
@@ -33,6 +35,8 @@ const Router = () => {
       <Stack.Screen name="PariwisataSejarah" component={PariwisataSejarah} />
       <Stack.Screen name="KampungHeritage" component={KampungHeritage} />
       <Stack.Screen name="FormPariwisataAlam" component={FormPariwisataAlam} />
+      <Stack.Screen name="BlogDetail" component={BlogDetail} />
+      <Stack.Screen name="EditBlogForm" component={EditBlogForm} />
     </Stack.Navigator>
   );
 };

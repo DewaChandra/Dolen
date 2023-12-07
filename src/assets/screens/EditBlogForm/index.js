@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
-const AddBlogForm = ({ onUpload }) => {
+const EditBlogForm = ({route}) => {
+  const {blogId} = route.params;
+  const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+
   const [blogData, setBlogData] = useState({
     title: '',
     content: '',
@@ -12,8 +24,7 @@ const AddBlogForm = ({ onUpload }) => {
     openingHours: '',
     ticketPrice: '',
   });
-  
-  const navigation = useNavigation();
+
   const handleChange = (key, value) => {
     setBlogData({
       ...blogData,
@@ -21,24 +32,51 @@ const AddBlogForm = ({ onUpload }) => {
     });
   };
 
-  const handleUpload = async () => {
+  useEffect(() => {
+    getBlogById();
+  }, [blogId]);
+
+  const getBlogById = async () => {
     try {
-      const response = await axios.post(
-        'https://6570831f09586eff66418846.mockapi.io/dolenapp/PariwisataAlam',
-        {
-          title: blogData.title,
-          content: blogData.content,
-          image: blogData.image,
-          googleMapsLink: blogData.googleMapsLink,
-          openingHours: blogData.openingHours,
-          ticketPrice: blogData.ticketPrice,
-        }
-      ).then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
+      const response = await axios.get(
+        `https://6570831f09586eff66418846.mockapi.io/dolenapp/PariwisataAlam/${blogId}`,
+      );
+      setBlogData({
+        title: response.data.title,
+        content: response.data.content,
+        googleMapsLink: response.data.googleMapsLink,
+        openingHours: response.data.openingHours,
+        ticketPrice: response.data.ticketPrice,
       });
+      setImage(response.data.image);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUpdate = async () => {
+    setLoading(true);
+    try {
+      await axios
+        .put(
+          `https://6570831f09586eff66418846.mockapi.io/dolenapp/PariwisataAlam/${blogId}`,
+          {
+            title: blogData.title,
+            content: blogData.content,
+            image,
+            googleMapsLink: blogData.googleMapsLink,
+            openingHours: blogData.openingHours,
+            ticketPrice: blogData.ticketPrice,
+          },
+        )
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      setLoading(false);
       navigation.navigate('PariwisataAlam');
     } catch (e) {
       console.log(e);
@@ -52,23 +90,22 @@ const AddBlogForm = ({ onUpload }) => {
           paddingHorizontal: 24,
           paddingVertical: 10,
           gap: 10,
-        }}
-      >
+        }}>
         <View style={styles.borderDashed}>
           <TextInput
             placeholder="Judul Artikel"
             value={blogData.title}
-            onChangeText={(text) => handleChange('title', text)}
+            onChangeText={text => handleChange('title', text)}
             placeholderTextColor="grey"
             multiline
             style={styles.titleInput}
           />
         </View>
-        <View style={[styles.borderDashed, { minHeight: 250 }]}>
+        <View style={[styles.borderDashed, {minHeight: 250}]}>
           <TextInput
             placeholder="Isi Konten"
             value={blogData.content}
-            onChangeText={(text) => handleChange('content', text)}
+            onChangeText={text => handleChange('content', text)}
             placeholderTextColor="grey"
             multiline
             style={styles.contentInput}
@@ -77,8 +114,8 @@ const AddBlogForm = ({ onUpload }) => {
         <View style={[styles.borderDashed]}>
           <TextInput
             placeholder="Image URL"
-            value={blogData.image}
-            onChangeText={(text) => handleChange('image', text)}
+            value={image}
+            onChangeText={text => handleChange('image', text)}
             placeholderTextColor="grey"
             style={styles.contentInput}
           />
@@ -87,7 +124,7 @@ const AddBlogForm = ({ onUpload }) => {
           <TextInput
             placeholder="Google Maps Link"
             value={blogData.googleMapsLink}
-            onChangeText={(text) => handleChange('googleMapsLink', text)}
+            onChangeText={text => handleChange('googleMapsLink', text)}
             placeholderTextColor="grey"
             style={styles.contentInput}
           />
@@ -96,7 +133,7 @@ const AddBlogForm = ({ onUpload }) => {
           <TextInput
             placeholder="Jam Buka"
             value={blogData.openingHours}
-            onChangeText={(text) => handleChange('openingHours', text)}
+            onChangeText={text => handleChange('openingHours', text)}
             placeholderTextColor="grey"
             style={styles.contentInput}
           />
@@ -105,22 +142,22 @@ const AddBlogForm = ({ onUpload }) => {
           <TextInput
             placeholder="Harga Tiket"
             value={blogData.ticketPrice}
-            onChangeText={(text) => handleChange('ticketPrice', text)}
+            onChangeText={text => handleChange('ticketPrice', text)}
             placeholderTextColor="grey"
             style={styles.contentInput}
           />
         </View>
       </ScrollView>
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.button} onPress={handleUpload}>
-          <Text style={styles.buttonLabel}>Upload</Text>
+        <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+          <Text style={styles.buttonLabel}>Update</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-export default AddBlogForm;
+export default EditBlogForm;
 
 const styles = StyleSheet.create({
   container: {
