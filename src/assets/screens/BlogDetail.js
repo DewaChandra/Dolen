@@ -10,8 +10,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import FastImage from 'react-native-fast-image';
 import ActionSheet from 'react-native-actions-sheet';
-import axios from 'axios';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
 const BlogDetail = ({route}) => {
   const {blogId} = route.params;
@@ -21,20 +23,21 @@ const BlogDetail = ({route}) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    getBlogById();
+    const subscriber = firestore()
+      .collection('blog')
+      .doc(blogId)
+      .onSnapshot(documentSnapshot => {
+        const blogData = documentSnapshot.data();
+        if (blogData) {
+          console.log('Blog data: ', blogData);
+          setSelectedBlog(blogData);
+        } else {
+          console.log(`Blog with ID ${blogId} not found.`);
+        }
+      });
+    setLoading(false);
+    return () => subscriber();
   }, [blogId]);
-
-  const getBlogById = async () => {
-    try {
-      const response = await axios.get(
-        `https://6570831f09586eff66418846.mockapi.io/dolenapp/PariwisataAlam/${blogId}`,
-      );
-      setSelectedBlog(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const navigateEdit = () => {
     closeActionSheet();
@@ -50,24 +53,41 @@ const BlogDetail = ({route}) => {
   };
 
   const handleDelete = async () => {
-    await axios
-      .delete(
-        `https://6570831f09586eff66418846.mockapi.io/dolenapp/PariwisataAlam/${blogId}`,
-      )
-      .then(() => {
-        closeActionSheet();
-        navigation.navigate('PariwisataAlam');
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    setLoading(true);
+    try {
+      await firestore()
+        .collection('blog')
+        .doc(blogId)
+        .delete()
+        .then(() => {
+          console.log('Blog deleted!');
+        });
+      if (selectedBlog?.image) {
+        const imageRef = storage().refFromURL(selectedBlog?.image);
+        await imageRef.delete();
+      }
+      console.log('Blog deleted!');
+      closeActionSheet();
+      setSelectedBlog(null);
+      setLoading(false)
+      navigation.navigate('Profile');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <View style={styles.container}>
       <ScrollView>
         {selectedBlog?.image ? (
-          <Image source={{uri: selectedBlog?.image}} style={styles.image} />
+          <FastImage
+            style={styles.image}
+            source={{
+              uri: selectedBlog?.image,
+              headers: {Authorization: 'someAuthToken'},
+              priority: FastImage.priority.high,
+            }}
+            resizeMode={FastImage.resizeMode.cover}></FastImage>
         ) : (
           <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" color={'blue'} />
@@ -132,6 +152,7 @@ const BlogDetail = ({route}) => {
     </View>
   );
 };
+export default BlogDetail;
 
 const styles = StyleSheet.create({
   container: {
@@ -217,5 +238,3 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
-
-export default BlogDetail;

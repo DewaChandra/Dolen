@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "458839751416",
+    "project_id": "dolenapp-2210c",
+    "storage_bucket": "dolenapp-2210c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:458839751416:android:d0c876dda7c756fa73990d",
+        "android_client_info": {
+          "package_name": "com.dolen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWi-fBq0uUARGpeUX-PbvB2lYJbFDEOEo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import axios from 'axios';
+import FastImage from 'react-native-fast-image';
+import { AddSquare, Add } from 'iconsax-react-native';
 import { useNavigation } from '@react-navigation/native';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
 
 const AddBlogForm = ({ onUpload }) => {
+  const [image, setImage] = useState(null); 
+  const [loading, setLoading] = useState(false); 
   const [blogData, setBlogData] = useState({
     title: '',
     content: '',
-    image: '',
     googleMapsLink: '',
     openingHours: '',
     ticketPrice: '',
@@ -21,27 +26,46 @@ const AddBlogForm = ({ onUpload }) => {
     });
   };
 
-  const handleUpload = async () => {
-    try {
-      const response = await axios.post(
-        'https://6570831f09586eff66418846.mockapi.io/dolenapp/PariwisataAlam',
-        {
-          title: blogData.title,
-          content: blogData.content,
-          image: blogData.image,
-          googleMapsLink: blogData.googleMapsLink,
-          openingHours: blogData.openingHours,
-          ticketPrice: blogData.ticketPrice,
-        }
-      ).then(function (response) {
-        console.log(response);
+  const handleImagePick = async () => {
+    ImagePicker.openPicker({
+      width: 1920,
+      height: 1080,
+      cropping: true,
+    })
+      .then(image => {
+        console.log(image);
+        setImage(image.path);
       })
-      .catch(function (error) {
+      .catch(error => {
         console.log(error);
       });
+  };
+
+  const handleUpload = async () => {
+    let filename = image.substring(image.lastIndexOf('/') + 1);
+    const extension = filename.split('.').pop();
+    const name = filename.split('.').slice(0, -1).join('.');
+    filename = name + Date.now() + '.' + extension;
+    const reference = storage().ref(`blogimages/${filename}`);
+    
+    setLoading(true);
+    try {
+      await reference.putFile(image);
+      const url = await reference.getDownloadURL();
+      await firestore().collection('blog').add({
+        title: blogData.title,
+        content: blogData.content,
+        image: url,
+        googleMapsLink: blogData.googleMapsLink,
+        openingHours: blogData.openingHours,
+        ticketPrice: blogData.ticketPrice,
+        createdAt: new Date(),
+      });
+      setLoading(false);
+      console.log('Blog added!');
       navigation.navigate('PariwisataAlam');
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -74,15 +98,57 @@ const AddBlogForm = ({ onUpload }) => {
             style={styles.contentInput}
           />
         </View>
-        <View style={[styles.borderDashed]}>
-          <TextInput
-            placeholder="Image URL"
-            value={blogData.image}
-            onChangeText={(text) => handleChange('image', text)}
-            placeholderTextColor="grey"
-            style={styles.contentInput}
-          />
-        </View>
+        {image ? (
+          <View style={{position: 'relative'}}>
+            <FastImage
+              style={{width: '100%', height: 127, borderRadius: 5}}
+              source={{
+                uri: image,
+                headers: {Authorization: 'someAuthToken'},
+                priority: FastImage.priority.high,
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                top: -5,
+                right: -5,
+                backgroundColor: 'blue',
+                borderRadius: 25,
+              }}
+              onPress={() => setImage(null)}>
+              <Add
+                size={20}
+                variant="Linear"
+                color='white'
+                style={{transform: [{rotate: '45deg'}]}}
+              />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={handleImagePick}>
+            <View
+              style={[
+                styles.borderDashed,
+                {
+                  gap: 10,
+                  paddingVertical: 30,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                },
+              ]}>
+              <AddSquare color='grey' variant="Linear" size={42} />
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: 'grey',
+                }}>
+                Upload Gambar
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
         <View style={[styles.borderDashed]}>
           <TextInput
             placeholder="Google Maps Link"

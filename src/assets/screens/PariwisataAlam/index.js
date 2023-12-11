@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
   RefreshControl
 } from 'react-native';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
-import axios from 'axios';
+import firestore from '@react-native-firebase/firestore';
 
 const PariwisataAlam = ({route}) => {
   const [animation] = useState(new Animated.Value(1));
@@ -22,31 +22,41 @@ const PariwisataAlam = ({route}) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
-  const getDataBlog = async () => {
-    try {
-      const response = await axios.get(
-        'https://6570831f09586eff66418846.mockapi.io/dolenapp/PariwisataAlam',
-      );
-      setTourismData(response.data);
-      setLoading(false)
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection('blog')
+      .onSnapshot(querySnapshot => {
+        const blogs = [];
+        querySnapshot.forEach(documentSnapshot => {
+          blogs.push({
+            ...documentSnapshot.data(),
+            id: documentSnapshot.id,
+          });
+        });
+        setTourismData(blogs);
+        setLoading(false);
+      });
+    return () => subscriber();
+  }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      getDataBlog()
+      firestore()
+        .collection('blog')
+        .onSnapshot(querySnapshot => {
+          const blogs = [];
+          querySnapshot.forEach(documentSnapshot => {
+            blogs.push({
+              ...documentSnapshot.data(),
+              id: documentSnapshot.id,
+            });
+          });
+          setTourismData(blogs);
+        });
       setRefreshing(false);
     }, 1500);
   }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      getDataBlog();
-    }, [])
-  );
 
   return (
     <View style={styles.container}>
@@ -124,6 +134,7 @@ const Items = ({ item }) => {
     </TouchableOpacity>
   );
 };
+export default PariwisataAlam;
 
 const styles = StyleSheet.create({
   container: {
@@ -210,5 +221,3 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 });
-
-export default PariwisataAlam;
