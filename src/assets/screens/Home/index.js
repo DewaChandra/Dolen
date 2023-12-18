@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import MyComponent from './menuUtama';
+import {useNavigation} from '@react-navigation/native';
 
 const Home = ({ navigation }) => {
   return (

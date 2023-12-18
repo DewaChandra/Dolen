@@ -6,6 +6,9 @@ import PariwisataSejarah from './PariwisataSejarah';
 import AddBlogForm from './PariwisataAlam';
 import BlogDetail from './BlogDetail';
 import EditBlogForm from './EditBlogForm';
+import Login from "./Login";
+import Register from "./Register";
+import SplashScreen from "./SplashScreen";
 export {
   Home,
   PariwisataAlam,
@@ -15,4 +18,7 @@ export {
   AddBlogForm,
   BlogDetail,
   EditBlogForm,
+  Login, 
+  Register, 
+  SplashScreen,
 };
